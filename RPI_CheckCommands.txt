@@ -1,0 +1,23 @@
+hex=$(vcgencmd get_throttled | awk ' BEGIN { FS="=0x" } ; { print $2}')
+bin=$(echo "obase=2; ibase=16; $hex" | bc)
+> currentRaport.log
+uptime >> currentRaport.log
+echo "" >> currentRaport.log
+echo "Current throttle error status: $bin [b]" >> currentRaport.log
+if [ $bin != "0" ]
+then
+echo "							   ||||           ||||_ under-voltage" >> currentRaport.log
+echo "							   ||||           |||_ currently throttled" >> currentRaport.log
+echo "							   ||||           ||_ arm frequency capped" >> currentRaport.log
+echo "							   ||||           |_ soft temperature reached" >> currentRaport.log
+echo "							   ||||_ under-voltage has occurred since last reboot" >> currentRaport.log
+echo "							   |||_ throttling has occurred since last reboot" >> currentRaport.log
+echo "							   ||_ arm frequency capped has occurred since last reboot" >> currentRaport.log
+echo "							   |_ soft temperature reached since last reboot" >> currentRaport.log
+fi
+echo "" >> currentRaport.log
+echo "Log files:" >> currentRaport.log
+echo "-> Messeges" >> currentRaport.log
+tail /var/log/messages >> currentRaport.log
+echo "-> Kernell log" >> currentRaport.log
+tail /var/log/kern.log >> currentRaport.log
